@@ -4,38 +4,36 @@
 //after - depois de todos os testes
 //afterEache - depois de cada teste
 
+/// <reference types="cypress" />
+
+const element = require("../fixtures/login.json");
+
 beforeEach(() => {
   cy.visit("https://automacao.qacoders-academy.com.br/login");
 });
 
+afterEach(() => {
+  cy.screenshot();
+});
+
 describe("Login", () => {
   it("Login com sucesso", () => {
-    cy.get("#email").type("sysadmin@qacoders.com");
-    cy.get("#password").type("1234@Test");
-    cy.get("#login").click();
-
-    cy.location().should((loc) => {
-      expect(loc.pathname).to.equal("/login");
-    });
-
-    cy.get("body > nav > button").should("be.visible");
+    const email = Cypress.env("EMAIL");
+    const password = Cypress.env("PASSWORD");
+    cy.Login(email, password);
   });
 
   it("Login com e-mail válido e a senha inválida", () => {
-    cy.get("#email").type("sysadmin@qacoders.com");
-    cy.get("#password").type("1234@");
-    cy.get("#login").click();
-
-    cy.get('[class="MuiAlert-message css-1xsto0d" ]').should("be.visible");
-    cy.get('[class="MuiAlert-message css-1xsto0d" ]').should("have.text", "E");
+    cy.get(element.input_email).type(Cypress.env("EMAIL"));
+    cy.get(element.input_password).type("PASSWORD_INVALIDO");
+    cy.get(element.btn_login).click();
+    cy.MsgLoginFalho();
   });
 
   it("Login com e-mail inválido e a senha válida", () => {
-    cy.get("#email").type("testet13@qacoders.com");
-    cy.get("#password").type("1234@Test");
-    cy.get("#login").click();
-
-    cy.get('[class="MuiAlert-message css-1xsto0d" ]').should("be.visible");
-    cy.get('[class="MuiAlert-message css-1xsto0d" ]').should("have.text", "E");
+    cy.get(element.input_email).type("EMAIL_INVALIDO");
+    cy.get(element.input_password).type(Cypress.env("PASSWORD"));
+    cy.get(element.btn_login).click();
+    cy.MsgLoginFalho();
   });
 });
